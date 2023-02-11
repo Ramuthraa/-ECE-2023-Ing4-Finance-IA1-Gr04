@@ -20,6 +20,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.ColorSolver", "Sudok
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku.Norvig", "Sudoku.Norvig\Sudoku.Norvig.csproj", "{176D0B5A-CFE3-49C2-91F1-E7A2662AD89B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z3SolversEtu", "Z3SolversEtu\Z3SolversEtu.csproj", "{BB2A3769-8335-4DF6-A955-AF6B0C5F8F81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{176D0B5A-CFE3-49C2-91F1-E7A2662AD89B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{176D0B5A-CFE3-49C2-91F1-E7A2662AD89B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{176D0B5A-CFE3-49C2-91F1-E7A2662AD89B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB2A3769-8335-4DF6-A955-AF6B0C5F8F81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB2A3769-8335-4DF6-A955-AF6B0C5F8F81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB2A3769-8335-4DF6-A955-AF6B0C5F8F81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB2A3769-8335-4DF6-A955-AF6B0C5F8F81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
