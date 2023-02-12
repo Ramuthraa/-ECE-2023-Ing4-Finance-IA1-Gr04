@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Z3;
 using Sudoku.Shared;
 
@@ -9,7 +10,7 @@ namespace Z3SolverEtu
     {
         public override Sudoku.Shared.SudokuGrid Solve(Sudoku.Shared.SudokuGrid s)
         {
-            return SolveOriginalVersion(s);
+            return SolveEtuVersion(s);
         }
 
     }
@@ -143,6 +144,68 @@ namespace Z3SolverEtu
         protected virtual Solver GetReusableSolver()
         {
             return ReusableZ3Solver;
+        }
+        protected Sudoku.Shared.SudokuGrid SolveEtuVersion(Sudoku.Shared.SudokuGrid instance)
+        {
+            using (Context ctx = new Context())
+            {
+                Solver solver = ctx.MkSolver();
+                IntExpr[,] cells = new IntExpr[9, 9];
+
+                // Create integer variables for each cell
+                for (int i = 0; i < 9; i++)
+                {
+                    for (int j = 0; j < 9; j++)
+                    {
+                        cells[i, j] = (IntExpr)ctx.MkConst(ctx.MkSymbol("cell_" + i.ToString() + "_" + j.ToString()), ctx.IntSort);
+                    }
+                }
+
+                for (int i = 0; i < 9; i++)
+                {
+                    for (int j = 0; j < 9; j++)
+                    {
+                        if (instance.Cells[i][j] == 0)
+                        {
+                            // Add the constraint for each empty cell
+                            solver.Assert(ctx.MkAnd(
+                                // The value must be between 1 and 9
+                                ctx.MkAnd(cells[i, j] >= ctx.MkInt(1), cells[i, j] <= ctx.MkInt(9)),
+                                // The value must not already be present in the same row
+                                ctx.MkNot(ctx.MkOr(Enumerable.Range(0, 9).Select(k => (BoolExpr)(ctx.MkEq(cells[i, j], cells[i, k]))))),
+                                // The value must not already be present in the same column
+                                ctx.MkNot(ctx.MkOr(Enumerable.Range(0, 9).Select(k => (BoolExpr)(ctx.MkEq(cells[i, j], cells[k, j]))))),
+                                // The value must not already be present in the same 3x3 subgrid
+                                ctx.MkNot(ctx.MkOr(Enumerable.Range(0, 3).SelectMany(x => Enumerable.Range(0, 3).Select(y => ctx.MkBool(cells[(i / 3) * 3 + x, (j / 3) * 3 + y] == cells[i, j])))))
+                            ));
+                        }
+                        else
+                        {
+                            // Add the constraint for each filled cell
+                            solver.Assert(ctx.MkEq(cells[i, j], ctx.MkInt(instance.Cells[i][j])));
+                        }
+                    }
+                }
+
+                if (solver.Check() == Status.SATISFIABLE)
+                {
+                    instance = instance.CloneSudoku();
+                    Model model = solver.Model;
+                    for (int i = 0; i < 9; i++)
+                    {
+                        for (int j = 0; j < 9; j++)
+                        {
+                            instance.Cells[i][j] = ((IntNum)model.Evaluate(cells[i, j])).Int;
+                        }
+                    }
+                    return instance;
+                }
+                else
+                {
+                    Console.WriteLine("Failed to solve sudoku");
+                    return instance;
+                }
+            }
         }
 
         protected Sudoku.Shared.SudokuGrid SolveOriginalVersion(Sudoku.Shared.SudokuGrid instance)
